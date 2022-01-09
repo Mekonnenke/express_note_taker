@@ -17,7 +17,7 @@ app.use(express.json());
 
 
 
-app.get('/notes', (req, res) => {
+app.get("/notes", (req, res) => {
     res.sendFile(path.join(mainDir, "notes.html"));
 });
 
@@ -41,13 +41,28 @@ app.post("/api/notes", (req, res) => {
     savedNotes.push(newNote);
 
     fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
-    console.log("Note saved to db.json. Content: ", newNote);
+    console.log("Thank you for sending content! Note saved to db.json. Content: ", newNote);
     res.json(savedNotes);
 });
 
+function validateNotes(notes) {
+    if (!notes.title || typeof notes.title !== 'string') {
+      return false;
+    }
+    if (!notes.text || typeof notes.text !== 'string') {
+      return false;
+    }
+    if (!notes.id || typeof notes.id !== 'string') {
+      return false;
+    }
+    if (!notes.content || !Array.isArray(notes.content)) {
+      return false;
+    }
+    return true;
+  }
 
 app.delete("/api/notes/:id",(req, res) =>{
-    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json"));
     let noteID = req.params.id;
     let newID = 0;
     console.log(`Deleting note with ID ${noteID}`);
